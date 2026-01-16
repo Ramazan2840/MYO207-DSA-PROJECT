@@ -1,77 +1,103 @@
-// Ramazan ÇİÇEK
-
+// RAMAZAN ÇİÇEK
 // 2420161064
-
 // https://www.btkakademi.gov.tr/portal/certificate/validate?certificateId=AJaS7nb9vo
 
 #include <stdio.h>
 
-void bubbleSort(int dizi[], int n) {
-    int i, j, gecici;
 
-    for (i = 0; i < n - 1; i++) {
-        for (j = 0; j < n - 1 - i; j++) {
-            if (dizi[j] > dizi[j + 1]) {
-                gecici = dizi[j];
-                dizi[j] = dizi[j + 1];
-                dizi[j + 1] = gecici;
-            }
-        }
-    }
+void takas(int *ap, int *bp) {
+    int gecici = *ap;
+    *ap = *bp;
+    *bp = gecici;
 }
 
-int binarySearch(int dizi[], int n, int arananSayi) {
-    int bas = 0;
-    int son = n - 1;
-    int orta;
 
-    while (bas <= son) {
-        orta = (bas + son) / 2;
-
-        if (dizi[orta] == arananSayi) {
-            return orta;
-        } else if (dizi[orta] < arananSayi) {
-            bas = orta + 1;
-        } else {
-            son = orta - 1;
-        }
-    }
-
-    return -1;
-}
-
-int main() {
-    int dizi[100];
-    int elemanSayisi;
+int indis_min_hesapla(int dizi[], int BOYUT, int bas_ind) {
     int i;
-    int arananSayi;
-    int sonuc;
+    int min_eleman = dizi[bas_ind];
+    int min_ind = bas_ind;
+    
+    for (i = bas_ind + 1; i < BOYUT; i++) {
+        if (dizi[i] < min_eleman) {
+            min_eleman = dizi[i];
+            min_ind = i;
+        }
+    }
+    return min_ind;
+}
 
-    printf("Dizi eleman sayisini giriniz: ");
-    scanf("%d", &elemanSayisi);
+void secmeli_sirala(int dizi[], int BOYUT) {
+    int i; 
+    int ind_min; 
+    
+    for (i = 0; i < BOYUT - 1; i++) { 
+        ind_min = indis_min_hesapla(dizi, BOYUT, i);
+        takas(dizi + i, dizi + ind_min);
+    }
+}
 
-    printf("Dizi elemanlarini giriniz:\n");
-    for (i = 0; i < elemanSayisi; i++) {
-        scanf("%d", &dizi[i]);
+
+int ikili_arama(int dizi[], int BOYUT, int search, int ilk_ind, int son_ind) {
+    int orta_ind = (ilk_ind + son_ind) / 2;
+    
+    
+    if (ilk_ind > son_ind) {
+        return -1;
     }
 
-    bubbleSort(dizi, elemanSayisi);
+   
+    if (search == dizi[orta_ind]) {
+        return orta_ind;
+    }
+    
+    else if (search > dizi[orta_ind]) {
+        return ikili_arama(dizi, BOYUT, search, orta_ind + 1, son_ind);
+    }
+    
+    else {
+        return ikili_arama(dizi, BOYUT, search, ilk_ind, orta_ind - 1);
+    }
+}
 
-    printf("Sirali dizi:\n");
-    for (i = 0; i < elemanSayisi; i++) {
+
+void dizi_yazdir(int dizi[], int BOYUT) {
+    int i;
+    for (i = 0; i < BOYUT; i++) {
         printf("%d ", dizi[i]);
     }
     printf("\n");
+}
 
-    printf("Aranacak sayiyi giriniz: ");
-    scanf("%d", &arananSayi);
+int main() {
+   
+    int A[] = {64, 25, 12, 22, 11, 90, 45, 33, 7, 18};
+    
+    
+    int N = sizeof(A) / sizeof(A[0]);
+    int aranan, sonuc;
 
-    sonuc = binarySearch(dizi, elemanSayisi, arananSayi);
+    printf("--- MYO207-DSA-PROJECT ---\n");
+    
+    printf("Siralanmamis Dizi:\n");
+    dizi_yazdir(A, N);
+
+   
+    secmeli_sirala(A, N);
+
+    printf("Sirali Dizi:\n");
+    dizi_yazdir(A, N);
+
+  
+    printf("\nAranacak Sayi: ");
+    scanf("%d", &aranan);
+
+   
+    sonuc = ikili_arama(A, N, aranan, 0, N - 1);
 
     if (sonuc != -1) {
-        printf("Aranan sayi dizide bulundu. Indeks: %d\n", sonuc);
+        printf("Aranan sayi (%d) bulundu. Indis: %d\n", aranan, sonuc);
     } else {
-        printf("Aranan sayi dizide bulunamadi.\n");
+        printf("Aranan sayi (%d) bulunamadi.\n", aranan);
     }
 
     return 0;
